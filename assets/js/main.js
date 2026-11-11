@@ -137,14 +137,15 @@
   }
 
   /* ---------- Contact form ------------------------------------------------
-     Sends the enquiry through FormSubmit (formsubmit.co), which emails it to
-     INBOX in the background — the visitor's email app is never opened. If
+     Sends the enquiry through Web3Forms (web3forms.com), which emails it to
+     the address the access key was created for in the background — the visitor's email app is never opened. If
      the request fails, the note under the button shows the address instead.
   ------------------------------------------------------------------------- */
   var form = document.getElementById('contactForm');
   var note = document.getElementById('formNote');
   var INBOX = 'admin@nablasquareai.co.uk';
-  var ENDPOINT = 'https://formsubmit.co/ajax/' + INBOX;
+  var ENDPOINT = 'https://api.web3forms.com/submit';
+  var ACCESS_KEY = '__WEB3FORMS_KEY__'; // public by design; tied to INBOX
 
   if (form) {
     var button = form.querySelector('button[type="submit"]');
@@ -173,9 +174,10 @@
 
       var subject = 'Enquiry — ' + (get('interest') || 'Nabla Square');
       var payload = {
-        _subject: subject,
-        _template: 'table',
-        _replyto: get('email'),
+        access_key: ACCESS_KEY,
+        subject: subject,
+        from_name: 'Nabla Square website',
+        replyto: get('email'),
         name: get('name'),
         organisation: get('organisation') || '—',
         email: get('email'),
@@ -206,7 +208,7 @@
       })
         .then(function (res) {
           return res.json().then(function (data) {
-            if (!res.ok || String(data.success) !== 'true') throw new Error(data.message || 'Send failed');
+            if (!res.ok || data.success !== true) throw new Error(data.message || 'Send failed');
           });
         })
         .then(function () {
