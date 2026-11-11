@@ -504,6 +504,7 @@
       </div>
 
       <form class="form" id="contactForm" novalidate>
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
         <div class="field-row">
           <div class="field">
             <label for="f-name">Your name</label>
@@ -539,7 +540,7 @@
           Send enquiry
           <svg class="arr" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
         </button>
-        <p class="form__note" id="formNote">This opens your email app with the message ready to send.</p>
+        <p class="form__note" id="formNote" role="status" aria-live="polite">We reply to every enquiry within two working days.</p>
       </form>
     </div>
   </div>

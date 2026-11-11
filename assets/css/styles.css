@@ -574,6 +574,9 @@ section { padding-block: var(--section-y); position: relative; }
 @media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
 .form .btn { width: 100%; }
 .form__note { font-size: .82rem; color: var(--muted-2); margin: 14px 0 0; text-align: center; }
+.form__note[data-state="success"] { color: var(--cyan-ink); font-weight: 600; }
+.form__note[data-state="error"] { color: var(--ink-2); }
+.form button[disabled] { opacity: .6; cursor: progress; }
 
 /* ---------- CTA band ------------------------------------------------------ */
 .cta-band {

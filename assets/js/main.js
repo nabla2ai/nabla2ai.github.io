@@ -137,15 +137,24 @@
   }
 
   /* ---------- Contact form ------------------------------------------------
-     Static hosting has no backend, so the form composes an email instead.
-     To use a form service (Formspree, Netlify, Getform…), give the <form>
-     an `action` attribute and this handler steps aside automatically.
+     Sends the enquiry through FormSubmit (formsubmit.co), which emails it to
+     INBOX. If that request fails, it falls back to opening the visitor's
+     email app with the message pre-filled.
   ------------------------------------------------------------------------- */
   var form = document.getElementById('contactForm');
   var note = document.getElementById('formNote');
   var INBOX = 'admin@nablasquareai.co.uk';
+  var ENDPOINT = 'https://formsubmit.co/ajax/' + INBOX;
 
-  if (form && !form.getAttribute('action')) {
+  if (form) {
+    var button = form.querySelector('button[type="submit"]');
+
+    var setNote = function (text, state) {
+      if (!note) return;
+      note.textContent = text;
+      note.setAttribute('data-state', state || '');
+    };
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
@@ -159,24 +168,58 @@
         return f ? String(f.value).trim() : '';
       };
 
+      // Honeypot: real visitors never fill this hidden field.
+      if (get('_honey')) return;
+
       var subject = 'Enquiry — ' + (get('interest') || 'Nabla Square');
-      var body = [
-        'Name: ' + get('name'),
-        'Organisation: ' + (get('organisation') || '—'),
-        'Email: ' + get('email'),
-        'Interested in: ' + get('interest'),
-        '',
-        get('message')
-      ].join('\n');
+      var payload = {
+        _subject: subject,
+        _template: 'table',
+        _replyto: get('email'),
+        name: get('name'),
+        organisation: get('organisation') || '—',
+        email: get('email'),
+        interest: get('interest'),
+        message: get('message')
+      };
 
-      window.location.href =
-        'mailto:' + INBOX +
-        '?subject=' + encodeURIComponent(subject) +
-        '&body=' + encodeURIComponent(body);
+      var openMailApp = function () {
+        var body = [
+          'Name: ' + payload.name,
+          'Organisation: ' + payload.organisation,
+          'Email: ' + payload.email,
+          'Interested in: ' + payload.interest,
+          '',
+          payload.message
+        ].join('\n');
+        window.location.href =
+          'mailto:' + INBOX +
+          '?subject=' + encodeURIComponent(subject) +
+          '&body=' + encodeURIComponent(body);
+        setNote('We couldn\'t send that directly, so your email app is opening instead. If nothing happens, write to ' + INBOX + '.', 'error');
+      };
 
-      if (note) {
-        note.textContent = 'Opening your email app… if nothing happens, write to ' + INBOX + '.';
-      }
+      if (!window.fetch) { openMailApp(); return; }
+
+      if (button) button.disabled = true;
+      setNote('Sending…', 'pending');
+
+      fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            if (!res.ok || String(data.success) !== 'true') throw new Error(data.message || 'Send failed');
+          });
+        })
+        .then(function () {
+          form.reset();
+          setNote('Thanks — your enquiry has been sent. We\'ll reply within two working days.', 'success');
+        })
+        .catch(openMailApp)
+        .then(function () { if (button) button.disabled = false; });
     });
   }
 
