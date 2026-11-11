@@ -143,7 +143,7 @@
   ------------------------------------------------------------------------- */
   var form = document.getElementById('contactForm');
   var note = document.getElementById('formNote');
-  var INBOX = 'hello@nablasquare.co.uk';
+  var INBOX = 'admin@nablasquareai.co.uk';
 
   if (form && !form.getAttribute('action')) {
     form.addEventListener('submit', function (e) {
