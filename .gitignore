@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Tooling / dependencies (the site itself needs none)
+node_modules/
+.cache/
+dist/
+.tmp/
+
+# Logs & env
+*.log
+npm-debug.log*
+.env
+.env.*

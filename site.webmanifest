@@ -1,0 +1,16 @@
+{
+  "name": "Nabla Square — AI Consultancy",
+  "short_name": "Nabla Square",
+  "description": "Practical AI consultancy, workshops and training: tool selection, productivity assessment, coding and debugging skills, and programmes from basics to advanced.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    { "src": "assets/logo/png/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/logo/png/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/logo/png/icon-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
+    { "src": "assets/logo/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
