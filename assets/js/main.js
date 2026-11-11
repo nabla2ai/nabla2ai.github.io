@@ -138,8 +138,8 @@
 
   /* ---------- Contact form ------------------------------------------------
      Sends the enquiry through FormSubmit (formsubmit.co), which emails it to
-     INBOX. If that request fails, it falls back to opening the visitor's
-     email app with the message pre-filled.
+     INBOX in the background — the visitor's email app is never opened. If
+     the request fails, the note under the button shows the address instead.
   ------------------------------------------------------------------------- */
   var form = document.getElementById('contactForm');
   var note = document.getElementById('formNote');
@@ -183,23 +183,18 @@
         message: get('message')
       };
 
-      var openMailApp = function () {
-        var body = [
-          'Name: ' + payload.name,
-          'Organisation: ' + payload.organisation,
-          'Email: ' + payload.email,
-          'Interested in: ' + payload.interest,
-          '',
-          payload.message
-        ].join('\n');
-        window.location.href =
-          'mailto:' + INBOX +
-          '?subject=' + encodeURIComponent(subject) +
-          '&body=' + encodeURIComponent(body);
-        setNote('We couldn\'t send that directly, so your email app is opening instead. If nothing happens, write to ' + INBOX + '.', 'error');
+      var showFailure = function () {
+        if (!note) return;
+        note.setAttribute('data-state', 'error');
+        note.textContent = 'Sorry, that didn\'t go through. Please try again, or email us at ';
+        var link = document.createElement('a');
+        link.href = 'mailto:' + INBOX;
+        link.textContent = INBOX;
+        note.appendChild(link);
+        note.appendChild(document.createTextNode('.'));
       };
 
-      if (!window.fetch) { openMailApp(); return; }
+      if (!window.fetch) { showFailure(); return; }
 
       if (button) button.disabled = true;
       setNote('Sending…', 'pending');
@@ -218,7 +213,7 @@
           form.reset();
           setNote('Thanks — your enquiry has been sent. We\'ll reply within two working days.', 'success');
         })
-        .catch(openMailApp)
+        .catch(showFailure)
         .then(function () { if (button) button.disabled = false; });
     });
   }
